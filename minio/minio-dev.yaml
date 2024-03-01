@@ -31,11 +31,37 @@ spec:
     - minio server /data --console-address :9090
     volumeMounts:
     - mountPath: /data
-      name: minio_vol # Corresponds to the `spec.volumes` Persistent Volume
+      name: minio-vol # Corresponds to the `spec.volumes` Persistent Volume
+    ports:
+    - name: minio-con-port
+      containerPort: 9090
+    - name: minio-port
+      containerPort: 9000
   nodeSelector:
-    kubernetes.io/hostname: kubealpha.local # Specify a node label associated to the Worker Node on which you want to deploy the pod.
+    kubernetes.io/hostname: nc2 # Specify a node label associated to the Worker Node on which you want to deploy the pod.
   volumes:
-  - name: minio_vol
+  - name: minio-vol
     hostPath: # MinIO generally recommends using locally-attached volumes
       path: /data/minio # Specify a path to a local drive or volume on the Kubernetes worker node
       type: DirectoryOrCreate # The path to the last directory must exist
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: minio-service
+  namespace: minio-dev
+spec:
+  type: NodePort
+  selector:
+    app: minio
+  ports:
+    - name: minio-console-port
+      protocol: TCP
+      port: 9090
+      targetPort: 9090
+      nodePort: 30099
+    - name: minio-api-port
+      protocol: TCP
+      port: 9000
+      targetPort: 9000
+      nodePort: 30090
