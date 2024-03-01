@@ -32,7 +32,9 @@ spec:
     volumeMounts:
     - mountPath: /data
       name: minio-vol # Corresponds to the `spec.volumes` Persistent Volume
-    ports:
+    - mountPath: /root/.minio
+      name: minio-config
+  ports:
     - name: minio-con-port
       containerPort: 9090
     - name: minio-port
@@ -44,24 +46,7 @@ spec:
     hostPath: # MinIO generally recommends using locally-attached volumes
       path: /data/minio # Specify a path to a local drive or volume on the Kubernetes worker node
       type: DirectoryOrCreate # The path to the last directory must exist
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: minio-service
-  namespace: minio-dev
-spec:
-  type: NodePort
-  selector:
-    app: minio
-  ports:
-    - name: minio-console-port
-      protocol: TCP
-      port: 9090
-      targetPort: 9090
-      nodePort: 30099
-    - name: minio-api-port
-      protocol: TCP
-      port: 9000
-      targetPort: 9000
-      nodePort: 30090
+  - name: minio-config
+    hostPath: # MinIO generally recommends using locally-attached volumes
+      path: /root/.minio # Specify a path to a local drive or volume on the Kubernetes worker node
+      type: DirectoryOrCreate # The path to the last directory must exist
