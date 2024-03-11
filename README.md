@@ -37,7 +37,7 @@ sudo systemctl enable containerd
 Install the latest [kubernetes release](https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/).
 
 ```bash
-KUBE_VERSION=$(curl -L -s https://dl.k8s.io/release/stable.txt)
+KUBE_VERSION=$(curl -L -s https://dl.k8s.io/release/stable.txt | sed -e 's/\..$//')
 sudo mkdir -p -m 755 /etc/apt/keyrings
 curl -fsSL https://pkgs.k8s.io/core:/stable:/${KUBE_VERSION}/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
 echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/${KUBE_VERSION}/deb/ /" | sudo tee /etc/apt/sources.list.d/kubernetes.list
@@ -55,10 +55,16 @@ sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
 sudo chown $(id -u):$(id -g) $HOME/.kube/config
 ```
 
+Get the join command.
+
+```bash
+kubeadm token create --print-join-command
+```
+
 Join worker nodes.
 
 ```bash
-kubeadm join ... --token ... --discovery-token-ca-cert-hash sha256:...
+sudo kubeadm join ... --token ... --discovery-token-ca-cert-hash sha256:...
 ```
 
 Install network plugin (calico).
