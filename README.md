@@ -10,7 +10,7 @@ The following section compresses all required steps to be prepared:
 sudo apt update
 sudo apt upgrade
 sudo swapoff -a
-sudo sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
+sudo sed -i '/swap/ s/^\(.*\)$/#\1/g' /etc/fstab
 sudo tee /etc/modules-load.d/containerd.conf <<EOF
 overlay
 br_netfilter
@@ -34,6 +34,17 @@ sudo systemctl restart containerd
 sudo systemctl enable containerd
 ```
 
+Disable IPv6.
+
+```bash
+vi /etc/default/grub
+...
+GRUB_CMDLINE_LINUX_DEFAULT="ipv6.disable=1"
+GRUB_CMDLINE_LINUX="ipv6.disable=1"
+...
+update-grub
+```
+
 Install the latest [kubernetes release](https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/).
 
 ```bash
@@ -53,6 +64,7 @@ sudo kubeadm init
 mkdir -p $HOME/.kube
 sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
 sudo chown $(id -u):$(id -g) $HOME/.kube/config
+sudo chmod 600 $HOME/.kube/config
 ```
 
 Get the join command.
@@ -72,3 +84,12 @@ Install network plugin (calico).
 ```bash
 kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.27.0/manifests/calico.yaml
 ```
+
+Install helm.
+
+&rarr; [https://helm.sh/docs/intro/install/](https://helm.sh/docs/intro/install/)
+
+```bash
+sudo snap install helm --classic
+```
+

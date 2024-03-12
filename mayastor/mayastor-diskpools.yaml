@@ -1,0 +1,17 @@
+apiVersion: "openebs.io/v1beta1"
+kind: DiskPool
+metadata:
+  name: dp-nc1
+  namespace: mayastor
+spec:
+  node: nc1
+  disks: ["/dev/disk/by-id/wwn-0x5002538d422741de"]
+---
+apiVersion: "openebs.io/v1beta1"
+kind: DiskPool
+metadata:
+  name: dp-nc2
+  namespace: mayastor
+spec:
+  node: nc2
+  disks: ["/dev/disk/by-id/wwn-0x5002538d423ebab2"]
