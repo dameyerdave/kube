@@ -37,12 +37,21 @@ sudo systemctl enable containerd
 Disable IPv6.
 
 ```bash
-vi /etc/default/grub
+sudo vi /etc/default/grub
 ...
 GRUB_CMDLINE_LINUX_DEFAULT="ipv6.disable=1"
 GRUB_CMDLINE_LINUX="ipv6.disable=1"
 ...
-update-grub
+sudo update-grub
+sudo reboot
+```
+
+Disable apparmor.
+
+```bash
+sudo systemctl stop apparmor
+sudo systemctl disable apparmor
+sudo systemctl restart containerd.service
 ```
 
 Install the latest [kubernetes release](https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/).
@@ -57,7 +66,7 @@ sudo apt install -y kubelet kubeadm kubectl
 sudo apt-mark hold kubelet kubeadm kubectl
 ```
 
-Init the cluster.
+Init the cluster (on the master node).
 
 ```bash
 sudo kubeadm init
@@ -67,13 +76,13 @@ sudo chown $(id -u):$(id -g) $HOME/.kube/config
 sudo chmod 600 $HOME/.kube/config
 ```
 
-Get the join command.
+Get the join command (on the master node).
 
 ```bash
 kubeadm token create --print-join-command
 ```
 
-Join worker nodes.
+Join worker nodes (on the worker nodes).
 
 ```bash
 sudo kubeadm join ... --token ... --discovery-token-ca-cert-hash sha256:...
@@ -93,3 +102,8 @@ Install helm.
 sudo snap install helm --classic
 ```
 
+(optional) Use control plane node as worker.
+
+```bash
+kubectl taint nodes --all node-role.kubernetes.io/control-plane-
+```

@@ -12,6 +12,17 @@ echo vm.nr_hugepages = 1024 | sudo tee -a /etc/sysctl.conf
 grep HugePages /proc/meminfo
 ```
 
+Load the required kernel modules.
+
+```bash
+sudo tee /etc/modules-load.d/mayastor.conf <<EOF
+nvme-tcp
+xfs
+EOF
+sudo modprobe nvme-tcp
+sudo modprobe xfs
+```
+
 Label Mayastor Node Candidates.
 
 ```bash
@@ -31,3 +42,9 @@ kubectl get pods -n mayastor
 
 ## Configuration
 
+&rarr; [https://mayastor.gitbook.io/introduction/quickstart/configure-mayastor](https://mayastor.gitbook.io/introduction/quickstart/configure-mayastor)
+
+```bash
+kubectl create -f mayastor/mayastor-diskpools.yaml
+kubectl create -f mayastor/persistent-volume-claims.yaml
+```
